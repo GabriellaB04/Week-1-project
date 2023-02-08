@@ -1,20 +1,29 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, FlatList } from 'react-native';
+import Pokedex from './src/components/Pokedex.tsx';
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    Pokedex()
+    // <View style={styles.container}>
+    //   <Text>Hello Gabriella!</Text>
+    //   <StatusBar style="auto" />
+    // </View>
   );
+  
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     backgroundColor: '#fff',
+//     alignItems: 'center',
+//     justifyContent: 'center',
+//     borderRadius: 30,
+//     marginVertical: 30,
+//     marginHorizontal: 30,
+//     padding: 30,
+//     margin: 10,
+//   },
+// });
+
