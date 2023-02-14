@@ -1,24 +1,9 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View,FlatList } from 'react-native';
-import React from 'react';
+import React, {useEffect, useState,Component} from 'react';
+import { StyleSheet, Text, View,FlatList, TouchableOpacity} from 'react-native';
+//import{Button} from 'react-native-paper';
 
 
-const DATA = [
-  {
-    id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
-    title: 'First Item',
-  },
-  {
-    id: '3ac68afc-c605-48d3-a4f8-fbd91aa97f63',
-    title: 'Second Item',
-  },
-  {
-    id: '58694a0f-3da1-471f-bd96-145571e29d72',
-    title: 'Third Item',
-  },
-];
-
-const pokemonList = require("../../assets/kanto.json")
 
 type ItemProps = {title: string, id:number};
 
@@ -29,17 +14,57 @@ const Item = ({title,id}: ItemProps) => (
   </View>
 );
 
+const getPokemon = async () => {
+  // fetch the api - put in a try catch statement in case it fails
+  // must use await to wait for the data
+  try {
+    const response = await fetch("https://pokeapi.co/api/v2/pokemon/?limit=898");
+    const json = await response.json();
+    const json_pokemon = json.results
+    //console.log(json_pokemon)
+    return(json_pokemon)
+  }
+  catch(error){
+    console.error(error)
+  }
+  
+}
 
-export default function Pokedex() {
+export default function Pokedex({navigation}) {
+  //create a state to keep the "variable" and not delete it when the page refreshes
+  const [pokemonList, setPokemon] = useState<{name: string; url: string}[]>([])
+
+  // use a useEffect to tell React that the component needs to do something after render
+  useEffect(() => {
+    const fetchPokemon = async () => {
+      const pokemonResponse = await getPokemon()
+      setPokemon(pokemonResponse)
+    }
+    fetchPokemon()
+  }, []);
+  
+
   return (
-    <View style={styles.container}>
-      <Text>Hello Gabriella!</Text>
+    <View style={{justifyContent: 'center', alignItems: 'center' }}>
       <StatusBar style="auto" />
-      <FlatList
+      
+      {
+        // check that the list isnt undefined
+        pokemonList.length > 0 && 
+        // print the list of information onto the screen
+        (<FlatList
         data={pokemonList}
-        renderItem={({item}) => <Item title={item.name} id={item.id}/>}
-        keyExtractor={item => item.id}
-      />
+        renderItem={({item, index}) => (
+          <TouchableOpacity onPress={() => navigation.navigate('SpecificPokemon',{name : item.name, url : item.url})}>
+         <Item title={item.name} id={index}/>
+          </TouchableOpacity> 
+        )}
+        
+        //<Item title={item.name} id={index}/>}
+        keyExtractor={item => item.name}
+        contentContainerStyle={{ padding: 10 }}
+      />)
+      }
     </View>
   );
 }
@@ -47,7 +72,6 @@ export default function Pokedex() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
