@@ -66,21 +66,32 @@ export default function SpecificPokemon({ route }) {
   };
 
   const pokeTypeList: string[] = getSpecies(detailsResponse?.types);
-  const spriteURL: string = detailsResponse?.sprites.front_default;
+  // const spriteURL: string = detailsResponse?.sprites.front_default;
+
+  const colourSwitch = (type) => {
+    switch (type) {
+      case "water":
+        return styles.colouredRectangleWater;
+      case "fire":
+        return styles.colouredRectangleFire;
+    }
+  };
 
   return (
-    <View style={styles.colouredRectangle}>
-      <Text style={styles.pokemonName}>{pokemonName}</Text>
-      <Image
-        source={{ uri: detailsResponse?.sprites.front_default }}
-        style={{ width: 400, height: 400 }}
-      />
+    <>
+      <View style={colourSwitch(pokeTypeList[0])}>
+        <View style={styles.pokemonNameContainer}>
+          <Text style={styles.pokemonName}>{pokemonName}</Text>
+        </View>
+      </View>
       <View style={styles.statsRectangle}>
-        {pokeTypeList?.map((pokemonType) => (
-          <View style={styles.pokeTypeContainer}>
-            <Text>{` ${pokemonType}`}</Text>
-          </View>
-        ))}
+        <View style={styles.typesContainer}>
+          {pokeTypeList?.map((pokemonType, index) => (
+            <View key={index} style={styles.pokeTypeIndivid}>
+              <Text>{` ${pokemonType}`}</Text>
+            </View>
+          ))}
+        </View>
         <View style={styles.infoBars}>
           <Text>{`Height : ${detailsResponse?.height} metres`}</Text>
         </View>
@@ -88,33 +99,59 @@ export default function SpecificPokemon({ route }) {
           <Text>{`Weight : ${detailsResponse?.weight} lbs`}</Text>
         </View>
       </View>
-    </View>
+      <View style={styles.pokemonSprite}>
+        <Image
+          source={{ uri: detailsResponse?.sprites.front_default }}
+          style={{ width: 300, height: 300 }}
+        />
+      </View>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
-  // container: {
-  //   backgroundColor: "#fff",
-  //   alignItems: "center",
-  //   justifyContent: "center",
-  //   borderRadius: 10,
-  //   marginVertical: 10,
-  //   marginHorizontal: 10,
-  //   padding: 10,
-  //   margin: 10,
-  // },
-  colouredRectangle: {
-    justifyContent: "flex-start",
-    height: "30%",
-    width: "100%",
+  colouredRectangleWater: {
+    // display: "flex",
+    // justifyContent: "flex-start",
+    // flexDirection: "column",
+    height: "100%",
+    // width: "100%",
     backgroundColor: "#90E4FF",
   },
+  colouredRectangleFire: {
+    // display: "flex",
+    // justifyContent: "flex-start",
+    // flexDirection: "column",
+    height: "100%",
+    // width: "100%",
+    backgroundColor: "#F9B146",
+  },
   statsRectangle: {
-    justifyContent: "flex-end",
-    height: "70%",
+    // display: "flex",
+    // // justifyContent: "flex-end",
+    // flexDirection: "column",
+    // flexGrow: 4,
+    position: "absolute",
+    top: 250,
+    height: 600,
     width: "100%",
     backgroundColor: "#FFFEFD",
-    borderRadius: 25,
+    borderRadius: 60,
+  },
+  pokemonNameContainer: {
+    padding: 15,
+    display: "flex",
+    justifyContent: "center",
+    flexDirection: "row",
+  },
+  pokemonName: {
+    color: "white",
+    fontSize: 50,
+  },
+  pokemonSprite: {
+    position: "absolute",
+    top: 70,
+    left: 70,
   },
   infoBars: {
     position: "relative",
@@ -128,13 +165,25 @@ const styles = StyleSheet.create({
     marginHorizontal: 16,
     borderRadius: 35,
   },
-  pokeTypeContainer: {
+  pokeTypeIndivid: {
+    display: "flex",
+    flexDirection: "row",
+    flexWrap: "nowrap",
     top: "5%",
     left: "7%",
     padding: 10,
+    marginHorizontal: 10,
     height: 42,
     width: "20%",
     backgroundColor: "#3692DC",
     borderRadius: 35,
+  },
+  typesContainer: {
+    display: "flex",
+    justifyContent: "center",
+    flexDirection: "row",
+    flexWrap: "nowrap",
+    // marginVertical: 50,
+    paddingTop: 150,
   },
 });
