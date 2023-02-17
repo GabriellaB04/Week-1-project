@@ -1,15 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet, View, Text, Image } from "react-native";
-import { useFonts } from "expo-font";
-import AppLoading from "expo-app-loading";
+import colourSwitch from "../utils/colourSwitch";
 
+// fetch the details of the individual pokemon
 const getPokemonDetails = async (url: string) => {
   try {
     const response = await fetch(url);
     const json = await response.json();
     return json;
   } catch (error) {
-    // eslint-disable-next-line no-console
     console.error(error);
   }
 };
@@ -19,24 +18,20 @@ export default function SpecificPokemon({ route }) {
   const pokemonName = obj.name;
   const pokemonUrl = obj.url;
 
-  // const [fontsLoaded] = useFonts({
-  //   "OpenSans-Regular": require("./assets/fonts/OpenSans-Regular.ttf"),
-  //   "OpenSans-Bold": require("./assets/fonts/OpenSans-Bold.ttf"),
-  // });
-  // if (!fontsLoaded) {
-  //   return <AppLoading />;
-  // }
-
+  // setting types
+  // PokemonType is to get the name
   type PokemonType = {
     type: {
       name: string;
     };
   };
 
+  //sprite is to get the image of the pokemon
   type Sprites = {
     front_default: string;
   };
 
+  //set the items in detailsResponse
   const [detailsResponse, setPokemonDetails] = useState<{
     name: string;
     sprites: Sprites;
@@ -46,6 +41,7 @@ export default function SpecificPokemon({ route }) {
   }>();
 
   useEffect(() => {
+    // fetch request for the details of the specific pokemon by calling getPokemonDetails
     const fetchDetails = async () => {
       const detailsResponse = await getPokemonDetails(pokemonUrl);
       setPokemonDetails(detailsResponse);
@@ -53,6 +49,7 @@ export default function SpecificPokemon({ route }) {
     fetchDetails();
   }, []);
 
+  // get the types of the pokemon e.g. grass, water, fire..
   const getSpecies = (typesList) => {
     if (typesList == undefined) {
       return [];
@@ -65,21 +62,17 @@ export default function SpecificPokemon({ route }) {
     }
   };
 
+  // set the type of the pokemon by calling getSpecies
   const pokeTypeList: string[] = getSpecies(detailsResponse?.types);
-  // const spriteURL: string = detailsResponse?.sprites.front_default;
-
-  const colourSwitch = (type) => {
-    switch (type) {
-      case "water":
-        return styles.colouredRectangleWater;
-      case "fire":
-        return styles.colouredRectangleFire;
-    }
-  };
 
   return (
     <>
-      <View style={colourSwitch(pokeTypeList[0])}>
+      <View
+        style={{
+          backgroundColor: colourSwitch(pokeTypeList[0])?.background,
+          height: "100%",
+        }}
+      >
         <View style={styles.pokemonNameContainer}>
           <Text style={styles.pokemonName}>{pokemonName}</Text>
         </View>
@@ -87,16 +80,34 @@ export default function SpecificPokemon({ route }) {
       <View style={styles.statsRectangle}>
         <View style={styles.typesContainer}>
           {pokeTypeList?.map((pokemonType, index) => (
-            <View key={index} style={styles.pokeTypeIndivid}>
+            <View
+              key={index}
+              style={{
+                ...styles.pokeTypeIndivid,
+                backgroundColor: colourSwitch(pokemonType)?.pokeType,
+              }}
+            >
               <Text>{` ${pokemonType}`}</Text>
             </View>
           ))}
         </View>
-        <View style={styles.infoBars}>
-          <Text>{`Height : ${detailsResponse?.height} metres`}</Text>
+        <View
+          style={{
+            ...styles.infoBars,
+            backgroundColor: colourSwitch(pokeTypeList[0])?.infoBars,
+          }}
+        >
+          <Text>{"Height : "}</Text>
+          <Text>{`${detailsResponse?.height} m`}</Text>
         </View>
-        <View style={styles.infoBars}>
-          <Text>{`Weight : ${detailsResponse?.weight} lbs`}</Text>
+        <View
+          style={{
+            ...styles.infoBars,
+            backgroundColor: colourSwitch(pokeTypeList[0])?.infoBars,
+          }}
+        >
+          <Text>{"Weight : "}</Text>
+          <Text>{`${detailsResponse?.weight} lbs`}</Text>
         </View>
       </View>
       <View style={styles.pokemonSprite}>
@@ -110,27 +121,7 @@ export default function SpecificPokemon({ route }) {
 }
 
 const styles = StyleSheet.create({
-  colouredRectangleWater: {
-    // display: "flex",
-    // justifyContent: "flex-start",
-    // flexDirection: "column",
-    height: "100%",
-    // width: "100%",
-    backgroundColor: "#90E4FF",
-  },
-  colouredRectangleFire: {
-    // display: "flex",
-    // justifyContent: "flex-start",
-    // flexDirection: "column",
-    height: "100%",
-    // width: "100%",
-    backgroundColor: "#F9B146",
-  },
   statsRectangle: {
-    // display: "flex",
-    // // justifyContent: "flex-end",
-    // flexDirection: "column",
-    // flexGrow: 4,
     position: "absolute",
     top: 250,
     height: 600,
@@ -154,6 +145,10 @@ const styles = StyleSheet.create({
     left: 70,
   },
   infoBars: {
+    display: "flex",
+    flexDirection: "row",
+    flexWrap: "nowrap",
+    justifyContent: "space-between",
     position: "relative",
     top: "10%",
     left: "7%",
@@ -184,6 +179,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "nowrap",
     // marginVertical: 50,
-    paddingTop: 150,
+    paddingTop: 110,
   },
 });
